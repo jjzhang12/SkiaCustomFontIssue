@@ -1,0 +1,41 @@
+﻿@page "/"
+@using SkiaSharp;
+@using System.Reflection;
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<button @onclick="OnButtonClick">Get Font</button>
+
+<p>Loaded typeface: @typefaceName</p>
+<p>Modified typeface: @modifiedTypefaceName</p>
+
+@code {
+    string typefaceName;
+    string modifiedTypefaceName;
+
+    private void OnButtonClick()
+    {
+        var typeface = GetTypeface("tahoma");
+        var modifiedTypeface = SKFontManager.Default.MatchTypeface(typeface, SKFontStyle.Normal);
+
+        typefaceName = typeface == null ? "null" : typeface.FamilyName;
+        modifiedTypefaceName = modifiedTypeface == null ? "null" : modifiedTypeface.FamilyName;
+    }
+
+    private static SKTypeface GetTypeface(string fullFontName)
+    {
+        SKTypeface result;
+
+        var assembly = Assembly.GetExecutingAssembly();
+        var stream = assembly.GetManifestResourceStream($"BlazorCustomFont.{fullFontName}.ttf");
+        if (stream == null)
+            return null;
+
+        result = SKTypeface.FromStream(stream);
+        return result;
+    }
+}
